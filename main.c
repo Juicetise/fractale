@@ -10,17 +10,36 @@ int		ft_close(t_q *q)
 int		my_key_funct(int keycode, t_q *q)
 {
 	printf("%d\n", keycode);
+	if (keycode == 3)
+	{
+		q->zoom = 240.000000;
+		q->select = 1;
+	}
+	if (keycode == 4)
+	{
+		q->zoom = 240.000000;
+		q->max_ite = 20;
+		q->select = 3;
+	}
 	if (keycode == 5)
 	{
-		if (q->select == 2)
-			q->select = 1;
-		else if (q->select == 1)
-			q->select = 2;
+		q->zoom = 370.000000;
+		q->select = 2;
+	}
+	if (keycode == 9)
+	{
+		if (q->color == 0x00000FFF)
+			q->color = 0x000000FF;
+		else if (q->color == 0x000000FF)
+			q->color = 0x00000FFF;
 	}
 	if (keycode == 12)
 		q->max_ite++;
 	if (keycode == 13)
+	{
+		printf("%d\n", q->max_ite);
 		q->max_ite--;
+	}
 	if (keycode == 31)
 		q->zoom = q->zoom + 10;
 	if (keycode == 35)
@@ -44,29 +63,44 @@ int		julia(t_q *q, int x, int y)
 	if (q->i == q->max_ite)
 		pxl2img(q, x, y, BLACK);
 	else
-		pxl2img(q, x, y, (START_COLOR << 14) + q->i * 500);
-	/*if (q->i == q->max_ite)
-		pxl2img(q, x, y, WHITE);
-	else if (q->i == q->max_ite / 2)
-		pxl2img(q, x, y, RED);
-	else if (q->i == q->max_ite / 4)
-		pxl2img(q, x, y, BLUE);
-	else if (q->i == q->max_ite / 6)
-		pxl2img(q, x, y, GREEN);
-	else if (q->i == q->max_ite / 8)
-		pxl2img(q, x, y, YELLOW);
-	else if (q->i == q->max_ite / 3)
-		pxl2img(q, x, y, GREY);
-	else if (q->i == q->max_ite / 5)
-		pxl2img(q, x, y, BROWN);
-	else if (q->i == q->max_ite / 7)
-		pxl2img(q, x, y, PURPLE);
-	else if (q->i == q->max_ite / 9)
-		pxl2img(q, x, y, ORANGE);
-	else
-		pxl2img(q, x, y, BLACK);*/
+		pxl2img(q, x, y, (q->color << 14) + q->i * 500);
 	return (0);
 }
+
+int		newton2(t_q *q, int x, int y)
+{
+	q->i = 0;
+	q->z = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
+	q->c = -2 - 2 * I;
+	while (creal(q->z) * creal(q->z) + cimag(q->z) * cimag(q->z) < 16 && q->i < q->max_ite)
+	{
+		q->z = q->z - (q->z * q->z * q->z - q->c) / (q->z * q->z * 3 * q->c);
+		q->i++;
+	}
+	if (q->i == q->max_ite)
+		pxl2img(q, x, y, BLACK);
+	else
+		pxl2img(q, x, y, (q->color << 14) + q->i * 500);
+	return (0);
+}
+
+int		newton(t_q *q, int x, int y)
+{
+	q->i = 0;
+	q->z = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
+	q->c = -2 - 2 * I;
+	while (creal(q->z) * creal(q->z) + cimag(q->z) * cimag(q->z) < 16 && q->i < q->max_ite)
+	{
+		q->z = (q->z * q->z * q->z * q->z + q->c) / (q->z * q->z * q->z);
+		q->i++;
+	}
+	if (q->i == q->max_ite)
+		pxl2img(q, x, y, BLACK);
+	else
+		pxl2img(q, x, y, (q->color << 14) + q->i * 500);
+	return (0);
+}
+
 
 int		mandelbrot(t_q *q, int x, int y)
 {
@@ -82,27 +116,7 @@ int		mandelbrot(t_q *q, int x, int y)
 	if (q->i == q->max_ite)
 		pxl2img(q, x, y, BLACK);
 	else
-		pxl2img(q, x, y, (START_COLOR << 14) + q->i * 500);
-	/*if (q->i == q->max_ite)
-		pxl2img(q, x, y, WHITE);
-	else if (q->i == q->max_ite / 2)
-		pxl2img(q, x, y, RED);
-	else if (q->i == q->max_ite / 4)
-		pxl2img(q, x, y, BLUE);
-	else if (q->i == q->max_ite / 6)
-		pxl2img(q, x, y, GREEN);
-	else if (q->i == q->max_ite / 8)
-		pxl2img(q, x, y, YELLOW);
-	else if (q->i == q->max_ite / 3)
-		pxl2img(q, x, y, GREY);
-	else if (q->i == q->max_ite / 5)
-		pxl2img(q, x, y, BROWN);
-	else if (q->i == q->max_ite / 7)
-		pxl2img(q, x, y, PURPLE);
-	else if (q->i == q->max_ite / 9)
-		pxl2img(q, x, y, ORANGE);
-	else
-		pxl2img(q, x, y, BLACK);*/
+		pxl2img(q, x, y, (q->color << 14) + q->i * 500);
 	return (0);
 }
 
@@ -122,6 +136,8 @@ void	fractal(t_q *q)
 				julia(q, x, y);
 			if (q->select == 2)
 				mandelbrot(q, x, y);
+			if (q->select == 3)
+				newton(q, x, y);
 			y++;
 		}
 		y = 0;
@@ -161,9 +177,10 @@ void	init(t_q *q)
 	q->select = 2;
 	q->height = 1000;
 	q->width = 1000;
-	q->zoom = 100;
+	q->zoom = 370;
 	q->max_ite = 100;
 	q->g = 1;
+	q->color = 0x000000FF;
 	q->mx = mlx_init();
 	q->wn = mlx_new_window(q->mx, q->height, q->width, "pdurand - FDF");
 	q->img = mlx_new_image(q->mx, q->height, q->width);

@@ -21,7 +21,6 @@
 # define WHITE 0x00F7F9F9
 # define ORANGE 0x00F39C12
 # define BLACK 0x00000000
-# define START_COLOR 0x000000FF
 # define x1 -2.1
 # define x2 0.6
 # define y1 -1.2
@@ -54,6 +53,7 @@ typedef struct		s_q
 	int				select;
 }					t_q;
 
+int					newton(t_q *q, int x, int y);
 int					julia(t_q *q, int x, int y);
 int					mandelbrot(t_q *q, int x, int y);
 void				pxl2img(t_q *q, int x, int y, int color);
