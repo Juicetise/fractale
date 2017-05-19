@@ -10,6 +10,7 @@
 # include <math.h>
 # include <complex.h>
 # include <stdio.h>
+# include <pthread.h>
 
 # define RED 0x00E74C3C
 # define BLUE 0x005DADE2
@@ -25,6 +26,7 @@
 # define x2 0.6
 # define y1 -1.2
 # define y2 1.2
+# define THREADS 8
 
 typedef _Complex double		t_complex;
 
@@ -53,11 +55,23 @@ typedef struct		s_q
 	int				select;
 }					t_q;
 
-int					newton(t_q *q, int x, int y);
-int					julia(t_q *q, int x, int y);
-int					mandelbrot(t_q *q, int x, int y);
+typedef struct		s_th_fract
+{
+	double			i;
+	t_complex		z;
+	t_complex		c;
+	t_q				*q;
+	int				part;
+}					t_th_fract;
+
+static void			draw_fractal(t_q *q, int part, t_th_fract *unth);
+static void			*threaderize_fractal(void *th);
+int					threaded_render(t_q *q);
+int					newton(t_q *q, int x, int y, t_th_fract *unth);
+int					julia(t_q *q, int x, int y, t_th_fract *unth);
+int					mandelbrot(t_q *q, int x, int y, t_th_fract *unth);
+int					newton2(t_q *q, int x, int y, t_th_fract *unth);
 void				pxl2img(t_q *q, int x, int y, int color);
-int					expose_fdf(t_q *q);
 int					clear_image(t_q *q, int x, int y);
 void				init(t_q *q);
 int					fractal_it(t_q *q, int x, int y);
