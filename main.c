@@ -8,15 +8,31 @@ int		ft_close(t_q *q)
 	exit(0);
 }
 
-void	mousexy(int x, int y, t_q *q)
+int		mousexy(int x, int y, t_q *q)
 {
-	
+	if (q->vit == 1)
+	{
+		q->jul_x = x * 0.05;
+		q->jul_y = y * 0.05;
+	}
+	if (q->vit == -1)
+	{
+		q->jul_x = x * 0.01;
+		q->jul_y = y * 0.01;
+	}
+	printf("%d\n", x);
+	printf("%d\n", y);
+	threaded_render(q);
+	return (0);
 }
 
-void	mousezoom(int button, int x, int y, t_q *q)
+//void	mousezoom(int button, int x, int y, t_q *q)
+
 int		my_key_funct(int keycode, t_q *q)
 {
 	printf("%d\n", keycode);
+	if (keycode == 8)
+		q->vit = -q->vit;
 	if (keycode == 3)
 	{
 		q->zoom = 140.000000;
@@ -60,27 +76,10 @@ int		julia(t_q *q, int x, int y, t_th_fract *unth)
 {
 	unth->i = 0;
 	unth->z = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
-	unth->c = 0.285 + 0.01 * I;
+	unth->c = 0.285 * q->jul_y + 0.01 * q->jul_x * I;
 	while (creal(unth->z) * creal(unth->z) + cimag(unth->z) * cimag(unth->z) < 16 && unth->i < q->max_ite)
 	{
 		unth->z = unth->z * unth->z + unth->c;
-		unth->i++;
-	}
-	if (unth->i == q->max_ite)
-		pxl2img(q, x, y, BLACK);
-	else
-		pxl2img(q, x, y, (q->color << 14) + unth->i * 500);
-	return (0);
-}
-
-int		newton2(t_q *q, int x, int y, t_th_fract *unth)
-{
-	unth->i = 0;
-	unth->z = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
-	unth->c = -2 - 2 * I;
-	while (creal(unth->z) * creal(unth->z) + cimag(unth->z) * cimag(unth->z) < 16 && unth->i < q->max_ite)
-	{
-		unth->z = unth->z - (unth->z * unth->z * unth->z - unth->c) / (unth->z * unth->z * 3 * unth->c);
 		unth->i++;
 	}
 	if (unth->i == q->max_ite)
@@ -94,7 +93,24 @@ int		newton(t_q *q, int x, int y, t_th_fract *unth)
 {
 	unth->i = 0;
 	unth->z = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
-	unth->c = -2 - 2 * I;
+	unth->c = -2 * q->jul_y - 2 * q->jul_x * I;
+	while (creal(unth->z) * creal(unth->z) + cimag(unth->z) * cimag(unth->z) < 16 && unth->i < q->max_ite)
+	{
+		unth->z = unth->z - (unth->z * unth->z * unth->z - unth->c) / (unth->z * unth->z * 3 * unth->c);
+		unth->i++;
+	}
+	if (unth->i == q->max_ite)
+		pxl2img(q, x, y, BLACK);
+	else
+		pxl2img(q, x, y, (q->color << 14) + unth->i * 500);
+	return (0);
+}
+
+int		newton2(t_q *q, int x, int y, t_th_fract *unth)
+{
+	unth->i = 0;
+	unth->z = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
+	unth->c = -2 * q->jul_y - 2 * q->jul_x * I;
 	while (creal(unth->z) * creal(unth->z) + cimag(unth->z) * cimag(unth->z) < 16 && unth->i < q->max_ite)
 	{
 		unth->z = (unth->z * unth->z * unth->z * unth->z + unth->c) / (unth->z * unth->z * unth->z);
@@ -116,7 +132,7 @@ int		mandelbrot(t_q *q, int x, int y, t_th_fract *unth)
 	unth->c = (x / q->zoom + x1) + (y / q->zoom + y1) * I;
 	while (creal(unth->z) * creal(unth->z) + cimag(unth->z) * cimag(unth->z) < 16 && unth->i < q->max_ite)
 	{
-		unth->z = unth->z * unth->z + unth->c;
+		unth->z = unth->z * unth->z * (1 + q->z) + unth->c; // jen etai la PB du turfu ;)
 		unth->i++;
 	}
 	if (unth->i == q->max_ite)
@@ -202,6 +218,7 @@ void	init(t_q *q)
 	q->zoom = 300;
 	q->max_ite = 25;
 	q->g = 1;
+	q->vit = 1;
 	q->color = 0x000000FF;
 	q->mx = mlx_init();
 	q->wn = mlx_new_window(q->mx, q->height, q->width, "pdurand - FRACTAL");
@@ -215,9 +232,9 @@ int		main()
 	
 	q = (t_q *)malloc(sizeof(t_q));
 	init(q);
+	mlx_hook(q->wn, 6, (1L << 6), *mousexy, q);
 	mlx_hook(q->wn, 2, (1L << 0), my_key_funct, q);
-	mlx_hook(q->wn, 6, (1L << 6), mousexy, q);
-	mlx_mouse_hook(a->mlx->win, mousezoom, q);
+	//mlx_mouse_hook(q->win, mousezoom, q);
 	mlx_expose_hook(q->wn, threaded_render, q);
 	mlx_loop(q->mx);
 }

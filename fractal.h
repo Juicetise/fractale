@@ -53,6 +53,9 @@ typedef struct		s_q
 	int				g;
 	int				tmp;
 	int				select;
+	double			jul_x;
+	double			jul_y;
+	int				vit;
 }					t_q;
 
 typedef struct		s_th_fract
