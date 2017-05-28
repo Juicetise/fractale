@@ -22,10 +22,6 @@
 # define WHITE 0x00F7F9F9
 # define ORANGE 0x00F39C12
 # define BLACK 0x00000000
-# define x1 -2.1
-# define x2 0.6
-# define y1 -1.2
-# define y2 1.2
 # define THREADS 8
 
 typedef _Complex double		t_complex;
@@ -49,6 +45,7 @@ typedef struct		s_q
 	t_complex		c;
 	int				i;
 	double			zoom;
+	double			zoom_i;
 	int				max_ite;
 	int				g;
 	int				tmp;
@@ -56,6 +53,20 @@ typedef struct		s_q
 	double			jul_x;
 	double			jul_y;
 	int				vit;
+	int				y;
+	double			xmove;
+	double			ymove;
+	int				xdist;
+	int				ydist;
+	double			x1;
+	double			x2;
+	double			y1;
+	double			y2;
+	double			tmp_x;
+	double			tmp_y;
+	double			tmp_x2;
+	double			tmp_y2;
+	int				colortype;
 }					t_q;
 
 typedef struct		s_th_fract
@@ -67,6 +78,8 @@ typedef struct		s_th_fract
 	int				part;
 }					t_th_fract;
 
+//static void			zoom_in(int x, int y, long double i, t_q *q);
+void				calc_zoom(int x, int y, int sense, t_q *q);
 static void			draw_fractal(t_q *q, int part, t_th_fract *unth);
 static void			*threaderize_fractal(void *th);
 int					threaded_render(t_q *q);
