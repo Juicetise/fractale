@@ -82,8 +82,6 @@ typedef struct		s_th_fract
 }					t_th_fract;
 
 void				calc_zoom(int x, int y, int sense, t_q *q);
-static void			draw_fractal(t_q *q, int part, t_th_fract *unth);
-static void			*threaderize_fractal(void *th);
 int					threaded_render(t_q *q);
 int					newton(t_q *q, int x, int y, t_th_fract *unth);
 int					julia(t_q *q, int x, int y, t_th_fract *unth);
