@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fractal.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pdurand <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/06/04 17:28:25 by pdurand           #+#    #+#             */
+/*   Updated: 2017/06/04 17:28:27 by pdurand          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FRACTAL_H
 # define FRACTAL_H
 
@@ -34,8 +46,6 @@ typedef struct		s_q
 	void			*wn;
 	void			*img;
 	int				color;
-	int				x_ratio;
-	int				y_ratio;
 	char			*argv;
 	int				bpp;
 	int				len;
@@ -47,13 +57,10 @@ typedef struct		s_q
 	double			zoom;
 	double			zoom_i;
 	int				max_ite;
-	int				g;
-	int				tmp;
 	int				select;
 	double			jul_x;
 	double			jul_y;
-	int				vit;
-	int				y;
+	int				speed;
 	double			xmove;
 	double			ymove;
 	int				xdist;
@@ -67,9 +74,14 @@ typedef struct		s_q
 	double			tmp_x2;
 	double			tmp_y2;
 	int				colortype;
-	int				frac;
-	int				move;
+	int				fracolorize;
+	int				stuck;
 	int				error;
+	int				start;
+	int				stop;
+	int				x;
+	int				y;
+	int				colortab[49];
 }					t_q;
 
 typedef struct		s_th_fract
@@ -96,7 +108,7 @@ int					ft_close(t_q *q);
 void				error(int n);
 int					julia(t_q *q, int x, int y, t_th_fract *unth);
 int					newton(t_q *q, int x, int y, t_th_fract *unth);
-int					newton2(t_q *q, int x, int y, t_th_fract *unth);
+int					flower(t_q *q, int x, int y, t_th_fract *unth);
 int					mandelbrot(t_q *q, int x, int y, t_th_fract *unth);
 void				init(t_q *q);
 int					param_parse(char *str, t_q *q);
@@ -105,5 +117,14 @@ int					ft_strcmp(const char *s1, const char *s2);
 int					mousezoom(int button, int x, int y, t_q *q);
 void				calc_zoom(int x, int y, int sense, t_q *q);
 int					mousexy(int x, int y, t_q *q);
+void				init_julia(t_q *q);
+void				init_mandelbrot(t_q *q);
+void				init_newton(t_q *q);
+void				init_flower(t_q *q);
+void				draw_selection(t_q *q, int x, int y, t_th_fract *unth);
+void				populatecolortab(t_q *q);
+void				populatecolortab2(t_q *q);
+void				my_key_funct2(int keycode, t_q *q);
+void				my_key_funct3(int keycode, t_q *q);
 
 #endif

@@ -14,26 +14,14 @@
 
 int		my_key_funct(int keycode, t_q *q)
 {
-	printf("%d\n", keycode);
-	if (keycode == 119)
-	{
-		if (q->move == 0)
-			q->move = 1;
-		else if (q->move == 1)
-			q->move = 0;
-		printf("%d", q->move);
-	}
-	if (keycode == 49)
-	{
-		if (q->colortype == 1)
-			q->colortype = 2;
-		else if (q->colortype == 2)
-			q->colortype = 1;
-	}
+	if (keycode > 0 && keycode < 14)
+		my_key_funct2(keycode, q);
+	if (keycode == 49 || keycode == 119)
+		my_key_funct3(keycode, q);
 	if (keycode == 69)
-		q->frac = q->frac + 100;
+		q->fracolorize = q->fracolorize + 100;
 	if (keycode == 78)
-		q->frac = q->frac - 100;
+		q->fracolorize = q->fracolorize - 100;
 	if (keycode == 126)
 		q->ymove = q->ymove + 5;
 	if (keycode == 125)
@@ -42,25 +30,24 @@ int		my_key_funct(int keycode, t_q *q)
 		q->xmove = q->xmove + 5;
 	if (keycode == 123)
 		q->xmove = q->xmove - 5;
+	if (keycode == 53)
+		ft_close(q);
+	threaded_render(q);
+	return (0);
+}
+
+void	my_key_funct2(int keycode, t_q *q)
+{
 	if (keycode == 8)
-		q->vit = -q->vit;
+		q->speed = -q->speed;
 	if (keycode == 3)
-	{
-		q->zoom = 140.000000;
-		q->select= 1;
-	}
+		init_julia(q);
 	if (keycode == 4)
-	{
-		q->zoom = 140.000000;
-		q->select = 3;
-	}
+		init_newton(q);
 	if (keycode == 5)
-	{
-		q->zoom = 300.000000;
-		q->select = 2;
-	}
+		init_mandelbrot(q);
 	if (keycode == 2)
-		q->select = 4;
+		init_flower(q);
 	if (keycode == 9)
 	{
 		if (q->color == 0x00000FFF)
@@ -73,12 +60,25 @@ int		my_key_funct(int keycode, t_q *q)
 	if (keycode == 12)
 		q->max_ite++;
 	if (keycode == 13)
-	{
-		printf("%d\n", q->max_ite);
 		q->max_ite--;
+	return ;
+}
+
+void	my_key_funct3(int keycode, t_q *q)
+{
+	if (keycode == 49)
+	{
+		if (q->colortype == 1)
+			q->colortype = 2;
+		else if (q->colortype == 2)
+			q->colortype = 1;
 	}
-	if (keycode == 53)
-		ft_close(q);
-	threaded_render(q);
-	return (0);
+	if (keycode == 119)
+	{
+		if (q->stuck == 0)
+			q->stuck = 1;
+		else if (q->stuck == 1)
+			q->stuck = 0;
+	}
+	return ;
 }

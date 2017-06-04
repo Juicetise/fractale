@@ -23,17 +23,17 @@ int		ft_close(t_q *q)
 int		param_parse(char *str, t_q *q)
 {
 	if (ft_strcmp(str, "Mandelbrot") == 0)
-		q->select = 2;
+		init_mandelbrot(q);
 	else if (ft_strcmp(str, "Julia") == 0)
-		q->select = 1;
+		init_julia(q);
 	else if (ft_strcmp(str, "Newton") == 0)
-		q->select = 3;
+		init_newton(q);
 	else if (ft_strcmp(str, "Flower") == 0)
-		q->select = 4;
+		init_flower(q);
 	else
 	{
 		error(2);
-		return(0);
+		return (0);
 	}
 	return (1);
 }
@@ -41,15 +41,17 @@ int		param_parse(char *str, t_q *q)
 void	error(int n)
 {
 	if (n == 2)
-		write(1, "Usage : ./fractol <fractal_name> : Mandelbrot | Julia | Newton | Flower\n", 72);
-	return	;
+	{
+		write(1, "Usage : ./fractol <fractal_name> : ", 36);
+		write(1, "Mandelbrot | Julia | Newton | Flower\n", 37);
+	}
+	return ;
 }
-
 
 int		main(int argc, char **argv)
 {
 	t_q	*q;
-	
+
 	q = NULL;
 	if (argc != 2)
 	{
